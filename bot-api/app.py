@@ -17,6 +17,7 @@ app.add_middleware(
 
 class PromptRequest(BaseModel):
     prompt: str
+    model: str
 
 @app.post("/ask")
 async def ask_bot(request: PromptRequest):
@@ -24,7 +25,7 @@ async def ask_bot(request: PromptRequest):
         response = await client.post(
             "http://ollama:11434/api/generate",
             json={
-                "model": "tinyllama",
+                "model": request.model,
                 "prompt": request.prompt,
                 "stream": False  # 👈 ADD THIS!
             }
