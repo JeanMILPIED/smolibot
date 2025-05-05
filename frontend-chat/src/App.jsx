@@ -11,14 +11,16 @@ function App() {
     if (!message.trim()) return;
 
     const userMessage = { sender: 'user', text: message };
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
+    //setMessages((prev) => [...prev, userMessage]);
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       const response = await fetch(`${API_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: message, model: selectedModel }),
+        body: JSON.stringify({ prompt: message, model: selectedModel, history: updatedMessages.slice(-5) }),
       });
       const data = await response.json();
 
