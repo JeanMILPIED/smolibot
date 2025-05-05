@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ChatWindow from './ChatWindow.jsx';
 import InputBox from './InputBox.jsx';
+import FileUploader from './FileUploader.jsx'
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -61,6 +62,7 @@ function App() {
 
           {/* Input box fixed at bottom of card */}
           <InputBox onSend={sendMessage} />
+          <FileUploader />
         </div>
       </div>
     </div>

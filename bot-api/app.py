@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import httpx
 from typing import List, Optional
+import fitz  # PyMuPDF
+from fastapi import UploadFile, File
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -24,6 +26,27 @@ class PromptRequest(BaseModel):
     model: str
     history: Optional[List[Message]] = []
 
+uploaded_docs = {}
+
+@app.post("/upload")
+async def upload_pdf(file: UploadFile = File(...)):
+    if not file.filename.endswith(".pdf"):
+        return {"error": "Only PDF files are supported"}
+
+    content = await file.read()
+    pdf_path = f"/tmp/{file.filename}"
+    with open(pdf_path, "wb") as f:
+        f.write(content)
+
+    # Parse PDF content
+    doc = fitz.open(pdf_path)
+    text = ""
+    for page in doc:
+        text += page.get_text()
+
+    uploaded_docs["latest"] = text
+    return {"message": "PDF uploaded and parsed successfully"}
+
 async def summarize_history(history: List[Message], model: str = "tinyllama") -> Message:
     conversation_text = "\n".join([f"{m.sender}: {m.text}" for m in history])
     prompt = f"Summarize the following conversation:\n{conversation_text}\nSummary:"
@@ -39,6 +62,8 @@ async def summarize_history(history: List[Message], model: str = "tinyllama") ->
 @app.post("/ask")
 async def ask_bot(request: PromptRequest):
 
+    doc_context = uploaded_docs.get("latest", "")
+
     # Determine if summarization is needed
     if len(request.history) > 5:
         summary_message = await summarize_history(request.history[:-5], model=request.model)
@@ -46,9 +71,14 @@ async def ask_bot(request: PromptRequest):
     else:
         trimmed_history = request.history
 
-    # Construct prompt with history
-    full_prompt = "\n".join([f"{m.sender}: {m.text}" for m in trimmed_history])
-    full_prompt += f"\nuser: {request.prompt}"
+    # Format chat history into prompt
+    history_prompt = "\n".join(f"{m.sender}: {m.text}" for m in trimmed_history)
+
+    # Combine document context and history
+    if doc_context:
+        full_prompt = f"Context:\n{doc_context[:1000]}\n\nConversation:\n{history_prompt}\nuser: {request.prompt}"
+    else:
+        full_prompt = f"{history_prompt}\nuser: {request.prompt}"
 
     async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
         response = await client.post(
