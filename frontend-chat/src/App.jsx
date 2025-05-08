@@ -41,17 +41,27 @@ function App() {
         <div className="text-2xl font-bold">
           Smolibot
         </div>
-        <select
-          value={selectedModel}
-          onChange={(e) => setSelectedModel(e.target.value)}
-          className="ml-4 p-2 bg-white text-pink-600 rounded shadow"
-        >
-          <option value="tinyllama">TinyLlama</option>
-          <option value="phi3">Phi-3</option>
-          {/* More models here if needed */}
-        </select>
+	<div className="items-center">
+          <select
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="ml-4 p-2 bg-white text-pink-600 rounded shadow"
+          >
+            <option value="tinyllama">TinyLlama</option>
+            <option value="smollm2">SmolLm2</option>
+            {/* More models here if needed */}
+          </select>
+          <button
+           onClick={() => {
+           setMessages([]);
+           fetch(`${API_URL}/reset`, { method: 'POST' }); // Call backend to reset context
+           }}
+           className="ml-4 px-3 py-1 bg-white text-pink-600 border border-pink-600 rounded hover:bg-pink-100"
+           >
+            New Chat
+          </button>
+        </div>
       </div>
-
       {/* Chat window and input */}
       <div className="flex flex-col flex-1 items-center justify-center overflow-hidden">
         <div className="flex flex-col w-full max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden flex-1">
