@@ -47,9 +47,9 @@ async def upload_pdf(file: UploadFile = File(...)):
     uploaded_docs["latest"] = text
     return {"message": "PDF uploaded and parsed successfully"}
 
-async def summarize_history(history: List[Message], model: str = "tinyllama") -> Message:
+async def summarize_history(history: List[Message], model: str = "smollm2") -> Message:
     conversation_text = "\n".join([f"{m.sender}: {m.text}" for m in history])
-    prompt = f"You are a note writer expert. You must stay concise with short sentences. Summarize the following conversation in max 3 lines:\n{conversation_text}\nSummary:"
+    prompt = f"You are a synthesis writer expert. You must stay concise with short sentences. Summarize the following conversation in max 3 sentences:\n{conversation_text}\nSummary:"
 
     async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
         response = await client.post(
@@ -76,7 +76,7 @@ async def ask_bot(request: PromptRequest):
 
     # Combine document context and history
     if doc_context:
-        full_prompt = f"Document context:\n{doc_context[:1000]}\n\nPrevious conversation:\n{history_prompt}\nNew user input: {request.prompt}"
+        full_prompt = f"Document context:\n{doc_context[:3000]}\n\nPrevious conversation:\n{history_prompt}\nNew user input: {request.prompt}"
     else:
         full_prompt = f"Previous conversation:\n{history_prompt}\nNew user input: {request.prompt}\nAnswer simply and remember you are a small model with small capabilities"
 
