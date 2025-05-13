@@ -9,7 +9,7 @@ services:
     volumes:
       - ollama-data:/root/.ollama
     restart: unless-stopped
-    entrypoint: ["/bin/bash", "-c", "ollama serve & sleep 5 && ollama pull smollm2 && ollama pull tinyllama && wait"]
+    entrypoint: ["/bin/bash", "-c", "ollama serve & sleep 5 && ollama pull smollm2 && ollama pull tinyllama && ollama pull moondream && wait"]
 
   bot-api:
     build: ./bot-api

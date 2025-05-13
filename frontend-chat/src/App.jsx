@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ChatWindow from './ChatWindow.jsx';
 import InputBox from './InputBox.jsx';
 import FileUploader from './FileUploader.jsx'
+import ImageUploader from './ImageUploader.jsx';
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -103,6 +104,7 @@ function App() {
           </div>
           <InputBox onSend={sendMessage} />
           <FileUploader />
+          <ImageUploader onExtractText={(text) => sendMessage(text)} />
         </div>
       </div>
     </div>

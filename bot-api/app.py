@@ -4,6 +4,7 @@ import httpx
 from typing import List, Optional
 import fitz  # PyMuPDF
 from fastapi import UploadFile, File
+import base64
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -96,3 +97,21 @@ async def ask_bot(request: PromptRequest):
 async def reset_context():
     uploaded_docs["latest"] = ""
     return {"status": "reset"}
+
+@app.post("/ocr")
+async def extract_text(image: UploadFile = File(...)):
+    contents = await image.read()
+    encoded = base64.b64encode(contents).decode("utf-8")
+
+    payload = {
+        "model": "moondream",
+        "prompt": "Describe image in one sentence and extract text if there is any",
+        "images": [encoded],
+        "stream": False
+    }
+
+    async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
+        response = await client.post("http://ollama:11434/api/generate", json=payload)
+
+    result = response.json()
+    return {"text": result.get("response", "")}
