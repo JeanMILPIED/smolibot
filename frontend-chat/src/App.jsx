@@ -12,6 +12,9 @@ function App() {
     const saved = sessionStorage.getItem("recentChats");
     return saved ? JSON.parse(saved) : [];
   });
+  const [isNewChat, setIsNewChat] = useState(true);
+  const [currentChatIndex, setCurrentChatIndex] = useState(null);
+
 
   const sendMessage = async (message) => {
     if (!message.trim()) return;
@@ -19,13 +22,6 @@ function App() {
     const userMessage = { sender: 'user', text: message };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
-    //setMessages((prev) => [...prev, userMessage]);
-
-    const title = message.slice(0, 30); // first 30 chars as a title
-    const newChat = { title, messages: [updatedMessages] };
-    const updatedChats = [...recentChats, newChat];
-    setRecentChats(updatedChats);
-    sessionStorage.setItem("recentChats", JSON.stringify(updatedChats));
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -37,18 +33,48 @@ function App() {
       const data = await response.json();
 
       const botMessage = { sender: 'bot', text: data.response || "No response.", model: selectedModel };
-      setMessages((prev) => [...prev, botMessage]);
+      const fullMessages = [...updatedMessages, botMessage];
+      setMessages(fullMessages);
+
+    // Only save to recentChats if this is a new chat
+    if (isNewChat) {
+      const title = message.slice(0, 30);
+      const newChat = { title, messages: fullMessages };
+      const updatedChats = [...recentChats, newChat];
+      setRecentChats(updatedChats);
+      sessionStorage.setItem("recentChats", JSON.stringify(updatedChats));
+      setCurrentChatIndex(updatedChats.length - 1);
+      setIsNewChat(false);
+    } else if (currentChatIndex !== null) {
+      const updatedChats = [...recentChats];
+      updatedChats[currentChatIndex].messages = fullMessages;
+      setRecentChats(updatedChats);
+      sessionStorage.setItem("recentChats", JSON.stringify(updatedChats));
+    }
+
+
     } catch (error) {
       const errorMessage = { sender: 'bot', text: "Error contacting bot!", model: selectedModel  };
-      setMessages((prev) => [...prev, errorMessage]);
+      const errorMessages = [...updatedMessages, errorMessage];
+      setMessages(errorMessages);
     }
   };
 
-  const loadChat = (chat) => {
+const loadChat = (chat, index) => {
+  try {
     if (chat && Array.isArray(chat.messages)) {
       setMessages(chat.messages);
+      setIsNewChat(false);
+      setCurrentChatIndex(index);
+    } else {
+      console.warn("Invalid chat format:", chat);
+      setMessages([{ sender: 'bot', text: 'Oops, cannot load this chat.' }]);
     }
-  };
+  } catch (err) {
+    console.error("Error loading chat:", err);
+    setMessages([{ sender: 'bot', text: 'An error occurred loading this chat.' }]);
+  }
+};
 
   return (
     <div className="flex h-screen bg-pink-50">
@@ -59,7 +85,7 @@ function App() {
           <div
             key={idx}
             className="cursor-pointer text-pink-700 hover:underline"
-            onClick={() => loadChat(chat)}
+            onClick={() => loadChat(chat, idx)}
           >
             {chat.title}
           </div>
@@ -87,6 +113,8 @@ function App() {
               <button
               onClick={() => {
               setMessages([]);
+              setIsNewChat(true);
+              setCurrentChatIndex(null);
               fetch(`${'http://localhost:8000'}/reset`, { method: 'POST' }); // Call backend to reset context
               }}
             className="ml-4 px-3 py-1 bg-white text-pink-600 border border-pink-600 rounded hover:bg-pink-100"

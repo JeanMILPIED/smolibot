@@ -7,11 +7,12 @@ function ChatWindow({ messages, isBotTyping, selectedModel}) {
     Prism.highlightAll();
   }, [messages]);
 
-  const formatMessage = (message) => {
-    return message.replace(/```(.*?)```/gs, (match, code) => {
-      return `<pre><code class="language-javascript">${code}</code></pre>`;
-    });
-  };
+const formatMessage = (message) => {
+  if (!message || typeof message !== 'string') return '';
+  return message.replace(/```(.*?)```/gs, (match, code) => {
+    return `<pre><code class="language-javascript">${code}</code></pre>`;
+  });
+};
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
