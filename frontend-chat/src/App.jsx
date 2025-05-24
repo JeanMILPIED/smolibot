@@ -6,7 +6,8 @@ import ImageUploader from './ImageUploader.jsx';
 
 function App() {
   const [messages, setMessages] = useState([]);
-  const [selectedModel, setSelectedModel] = useState('tinyllama');
+  const [selectedModel, setSelectedModel] = useState('smollm2');
+  const [selectedMode, setSelectedMode] = useState('friendly');
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [recentChats, setRecentChats] = useState(() => {
     const saved = sessionStorage.getItem("recentChats");
@@ -14,6 +15,7 @@ function App() {
   });
   const [isNewChat, setIsNewChat] = useState(true);
   const [currentChatIndex, setCurrentChatIndex] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
 
 
   const sendMessage = async (message) => {
@@ -25,10 +27,23 @@ function App() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+      const getStylePrefix = (mode) => {
+        switch (mode) {
+            case 'friendly': return "You are a friendly assistant. ";
+            case 'expert': return "You are an expert providing detailed and accurate answers. ";
+            case 'playful': return "You respond in a fun and humorous way. ";
+            case 'sarcastic': return "You answer sarcastically but still helpfully. ";
+            default: return "";
+          }
+        };
+
+      const styledPrompt = `${getStylePrefix(selectedMode)}User: ${message}`;
+
       const response = await fetch(`${API_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: message, model: selectedModel, history: updatedMessages.slice(-5) }),
+        body: JSON.stringify({ prompt: styledPrompt, model: selectedModel, history: updatedMessages.slice(-5) }),
       });
       const data = await response.json();
 
@@ -38,7 +53,7 @@ function App() {
 
     // Only save to recentChats if this is a new chat
     if (isNewChat) {
-      const title = message.slice(0, 30);
+      const title = message.slice(0, 20)+"...";
       const newChat = { title, messages: fullMessages };
       const updatedChats = [...recentChats, newChat];
       setRecentChats(updatedChats);
@@ -110,11 +125,24 @@ const loadChat = (chat, index) => {
                 <option value="smollm2">SmolLm2</option>
                 {/* More models here if needed */}
               </select>
+
+              <select
+              value={selectedMode}
+              onChange={(e) => setSelectedMode(e.target.value)}
+              className="ml-2 p-2 bg-white text-pink-600 rounded shadow"
+              >
+              <option value="friendly">Friendly</option>
+              <option value="expert">Expert</option>
+              <option value="playful">Playful</option>
+              <option value="sarcastic">Sarcastic</option>
+              </select>
+
               <button
               onClick={() => {
               setMessages([]);
               setIsNewChat(true);
               setCurrentChatIndex(null);
+              setUploadedImage(null); // Clear image preview
               fetch(`${'http://localhost:8000'}/reset`, { method: 'POST' }); // Call backend to reset context
               }}
             className="ml-4 px-3 py-1 bg-white text-pink-600 border border-pink-600 rounded hover:bg-pink-100"
@@ -129,6 +157,7 @@ const loadChat = (chat, index) => {
         <div className="flex flex-col w-full max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden flex-1">
           <div className="flex-1 overflow-y-auto">
             <ChatWindow messages={messages} isBotTyping={isBotTyping} selectedModel={selectedModel} />
+            <div className="text-sm text-pink-500 italic">Current mode: {selectedMode}</div>
           </div>
           <InputBox onSend={sendMessage} />
           <FileUploader />

@@ -125,4 +125,4 @@ async def extract_text(image: UploadFile = File(...)):
     image_np = np.array(Image.open(io.BytesIO(contents)).convert("RGB"))
     results = reader.readtext(image_np, detail=0)
     extracted_text = "|".join(results)
-    return {"text": result.get("response", "") + "\n(extracted text content is : " + extracted_text + ")"}
+    return {"text": "📷 "+ result.get("response", "") + "\n(extracted text content is : " + extracted_text + ")"}

@@ -42,7 +42,7 @@ function ImageUploader({ onExtractText }) {
         disabled={!file}
         className="mt-2 px-4 py-1 bg-blue-500 text-white rounded"
       >
-        Extract Text from Image
+        📷 Add Image In The Chat
       </button>
     </div>
   );
