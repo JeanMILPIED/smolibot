@@ -5,8 +5,14 @@ from typing import List, Optional
 import fitz  # PyMuPDF
 from fastapi import UploadFile, File
 import base64
+import easyocr
+from PIL import Image
+import numpy as np
+import io
 
 from fastapi.middleware.cors import CORSMiddleware
+
+reader = easyocr.Reader(['en', 'fr'])  # Add languages as needed
 
 app = FastAPI()
 
@@ -101,17 +107,22 @@ async def reset_context():
 @app.post("/ocr")
 async def extract_text(image: UploadFile = File(...)):
     contents = await image.read()
+
     encoded = base64.b64encode(contents).decode("utf-8")
 
     payload = {
         "model": "moondream",
-        "prompt": "Describe image in one sentence and extract text if there is any",
+        "prompt": "Describe this image",
         "images": [encoded],
         "stream": False
     }
 
     async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
         response = await client.post("http://ollama:11434/api/generate", json=payload)
-
     result = response.json()
-    return {"text": result.get("response", "")}
+
+    #extract text with easy ocr
+    image_np = np.array(Image.open(io.BytesIO(contents)).convert("RGB"))
+    results = reader.readtext(image_np, detail=0)
+    extracted_text = "|".join(results)
+    return {"text": result.get("response", "") + "\n(extracted text content is : " + extracted_text + ")"}

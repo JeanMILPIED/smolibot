@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 # Serve build folder using nginx
-FROM nginx:stable-alpine
+FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 

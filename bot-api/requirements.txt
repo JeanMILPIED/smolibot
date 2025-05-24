@@ -4,3 +4,6 @@ httpx
 requests
 PyMuPDF
 python-multipart
+easyocr
+numpy<2
+Pillow

@@ -132,7 +132,7 @@ const loadChat = (chat, index) => {
           </div>
           <InputBox onSend={sendMessage} />
           <FileUploader />
-          <ImageUploader onExtractText={(text) => sendMessage(text)} />
+          <ImageUploader onExtractText={(text) => setMessages([{ sender: 'bot', text: text}])} />
         </div>
       </div>
     </div>
