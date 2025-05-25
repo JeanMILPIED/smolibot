@@ -4,7 +4,9 @@
 It can read documents, analyze images with OCR, and interact in multiple modes — all without needing an internet connection.  
 Your data stays entirely local.
 
-## say Hi! to **Smolibot** and enjoy  
+say Hi! to **Smolibot** and enjoy  
+
+-----
 
 ### ✨ Features
 - 🧠 Tiny LLMs: Uses small language models like TinyLLaMA or SmolLm2 for fast, low-resource conversations.
@@ -26,7 +28,9 @@ cd smolibot
 docker-compose up --build
 ```
 
-Once running, open your browser to http://localhost:3000
+Once running, open your browser to http://localhost:3000  
+
+-----
 
 ### 🛠️ Usage
 #### Chat
@@ -51,6 +55,8 @@ Once running, open your browser to http://localhost:3000
 - OCR: EasyOCR (local)
 - LLM: TinyLLaMA, SmolLm2 via Ollama
 - Containerized: Docker & Docker Compose
+
+-----
 
 ### 🤝 Contributing
 Contributions are welcome! Feel free to submit a PR or open an issue.
