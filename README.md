@@ -16,6 +16,8 @@ say Hi! to **Smolibot** and enjoy
 - 💾 Session History: Recent chats persist across tabs (but reset with each session).
 - 🔐 Local & Private: Runs fully offline in Docker, no cloud or external APIs.
 
+-----
+
 ### 📦 Installation
 Prerequisites
 - Docker & Docker Compose  
@@ -47,6 +49,8 @@ Once running, open your browser to http://localhost:3000
 - Switch to image mode.
 - Upload image file.
 - Click "Add image in the chat" to run Image Description and OCR using EasyOCR.
+
+-----
 
 ### 🧰 Tech Stack
 - Frontend: React + TailwindCSS
