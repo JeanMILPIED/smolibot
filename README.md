@@ -21,7 +21,7 @@ Prerequisites
 - Modern browser (for frontend)
 
 ```
-git clone https://github.com/yourusername/smolibot.git  
+git clone https://github.com/jeanmilpied/smolibot.git  
 cd smolibot  
 docker-compose up --build
 ```
