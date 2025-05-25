@@ -4,7 +4,7 @@
 It can read documents, analyze images with OCR, and interact in multiple modes — all without needing an internet connection.  
 Your data stays entirely local.
 
-say Hi! to **Smolibot** and enjoy  
+## say Hi! to **Smolibot** and enjoy  
 
 ### ✨ Features
 - 🧠 Tiny LLMs: Uses small language models like TinyLLaMA or SmolLm2 for fast, low-resource conversations.
@@ -20,9 +20,11 @@ Prerequisites
 - Python 3.9+  
 - Modern browser (for frontend)
 
-git clone https://github.com/yourusername/smolibot.git
-cd smolibot
+```
+git clone https://github.com/yourusername/smolibot.git  
+cd smolibot  
 docker-compose up --build
+```
 
 Once running, open your browser to http://localhost:3000
 
