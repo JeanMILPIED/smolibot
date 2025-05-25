@@ -52,7 +52,7 @@ const formatMessage = (message) => {
         <div className="flex justify-start items-center gap-2 my-2">
           <img src="/favicon.ico" alt="Bot typing..." className="w-6 h-6 animate-spin" />
           <div className="bg-pink-300 text-white px-3 py-1 rounded-lg animate-pulse">
-            Bot is typing...
+            Smolibot is typing...
           </div>
         </div>
       )}

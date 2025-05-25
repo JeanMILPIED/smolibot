@@ -39,7 +39,7 @@ function App() {
         };
 
       const styledPrompt = `${getStylePrefix(selectedMode)}User: ${message}`;
-
+      setIsBotTyping(true);
       const response = await fetch(`${API_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,7 +72,8 @@ function App() {
       const errorMessage = { sender: 'bot', text: "Error contacting bot!", model: selectedModel  };
       const errorMessages = [...updatedMessages, errorMessage];
       setMessages(errorMessages);
-    }
+    } finally {
+      setIsBotTyping(false);}
   };
 
 const loadChat = (chat, index) => {

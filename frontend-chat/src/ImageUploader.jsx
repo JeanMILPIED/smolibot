@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 function ImageUploader({ onExtractText }) {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [isBotTyping, setIsBotTyping] = useState(false);
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -19,7 +20,7 @@ function ImageUploader({ onExtractText }) {
     formData.append("image", file);
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
+    setIsBotTyping(true);
     const response = await fetch(`${API_URL}/ocr`, {
       method: "POST",
       body: formData,
@@ -27,6 +28,7 @@ function ImageUploader({ onExtractText }) {
 
     const data = await response.json();
     onExtractText(data.text || "No text found.");
+    setIsBotTyping(false);
   };
 
   return (
@@ -44,6 +46,15 @@ function ImageUploader({ onExtractText }) {
       >
         📷 Add Image In The Chat
       </button>
+      {/* Typing indicator */}
+      {isBotTyping && (
+        <div className="flex justify-start items-center gap-2 my-2">
+          <img src="/favicon.ico" alt="Bot typing..." className="w-6 h-6 animate-spin" />
+          <div className="bg-blue-500 text-white px-3 py-1 rounded-lg animate-pulse">
+            Analysis in progress...
+          </div>
+        </div>
+      )}
     </div>
   );
 }
