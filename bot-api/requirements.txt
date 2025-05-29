@@ -7,3 +7,4 @@ python-multipart
 easyocr
 numpy<2
 Pillow
+psutil

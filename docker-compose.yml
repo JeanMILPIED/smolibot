@@ -13,6 +13,8 @@ services:
 
   bot-api:
     build: ./bot-api
+    volumes:
+      - ./bot-api:/app
     container_name: bot-api
     ports:
       - "8000:8000"

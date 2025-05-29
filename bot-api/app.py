@@ -9,8 +9,11 @@ import easyocr
 from PIL import Image
 import numpy as np
 import io
+import asyncio
 
 from fastapi.middleware.cors import CORSMiddleware
+
+from utils.energy_tracker import measure_energy_cost
 
 reader = easyocr.Reader(['en', 'fr'])  # Add languages as needed
 
@@ -87,17 +90,30 @@ async def ask_bot(request: PromptRequest):
     else:
         full_prompt = f"Previous conversation:\n{history_prompt}\nNew user input: {request.prompt}\nAnswer simply and remember you are a small model with small capabilities"
 
-    async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
-        response = await client.post(
+    # Wrap the model request in a sync function so we can measure energy
+    def send_request():
+        response = httpx.post(
             "http://ollama:11434/api/generate",
             json={
                 "model": request.model,
                 "prompt": full_prompt,
-                "stream": False  # 👈 ADD THIS!
-            }
+                "stream": False
+            },
+            timeout=60.0
         )
-        result = response.json()
-        return {"response": result.get("response")}
+        return response.json()
+
+    result, stats = await asyncio.to_thread(measure_energy_cost, send_request)
+
+    return {
+        "response": result.get("response", ""),
+        "stats": {
+            "cpu_time_sec": round(stats["cpu_time"], 3),
+            "duration_sec": round(stats["duration"], 2),
+            "energy_wh": round(stats["energy_wh"], 4),
+            "memory_diff_mb": round(stats["memory_diff_mb"], 2)
+        }
+    }
 
 @app.post("/reset")
 async def reset_context():

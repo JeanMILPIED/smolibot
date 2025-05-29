@@ -39,10 +39,15 @@ const formatMessage = (message) => {
               dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }}
             />
             {msg.sender === 'bot' && (
-                <div className="text-xs italic text-gray-400 mt-1">
-                  Generated locally by {selectedModel}
-                </div>
-              )}
+              <div className="text-xs italic text-gray-400 mt-1 leading-snug">
+                Generated locally by {selectedModel}
+                {msg.stats && (
+                  <div className="text-[10px] text-gray-500 mt-1">
+                    ⏱ {msg.stats.duration_sec}s • 🔋 {msg.stats.energy_wh}Wh • 💾 {msg.stats.memory_diff_mb}MB
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       ))}

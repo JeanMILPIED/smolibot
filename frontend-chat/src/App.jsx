@@ -47,7 +47,7 @@ function App() {
       });
       const data = await response.json();
 
-      const botMessage = { sender: 'bot', text: data.response || "No response.", model: selectedModel };
+      const botMessage = { sender: 'bot', text: data.response || "No response.", stats:data.stats || "No data" , model: selectedModel };
       const fullMessages = [...updatedMessages, botMessage];
       setMessages(fullMessages);
 
