@@ -42,7 +42,7 @@ const formatMessage = (message) => {
               <div className="text-xs italic text-gray-400 mt-1 leading-snug">
                 Generated locally by {selectedModel}
                 {msg.stats && (
-                  <div className="text-[10px] text-gray-500 mt-1">
+                  <div className="text-xs text-gray-400 mt-1 leading-snug">
                     ⏱ {msg.stats.duration_sec}s • 🔋 {msg.stats.energy_wh}Wh • 💾 {msg.stats.memory_diff_mb}MB
                   </div>
                 )}
