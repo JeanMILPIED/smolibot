@@ -19,8 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install CPU-only torch manually
 RUN pip install --no-cache-dir \
-    torch==2.2.2+cpu \
-    torchvision==0.17.2+cpu \
+    torch==2.2.2 \
+    torchvision==0.17.2 \
     -f https://download.pytorch.org/whl/torch_stable.html
 
 # Install Python dependencies
